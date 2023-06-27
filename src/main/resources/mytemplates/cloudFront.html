@@ -1,0 +1,59 @@
+<!-- Include the Video.js library -->
+<link href="https://vjs.zencdn.net/7.15.4/video-js.min.css" rel="stylesheet" />
+<script src="https://vjs.zencdn.net/7.15.4/video.min.js"></script>
+
+<video id="my-video" class="video-js vjs-default-skin" controls preload="auto" width="640" height="264" data-setup="{}">
+    <source src="http://d2tidpfltjr45g.cloudfront.net/resonance reversed.mp4?Expires=1688125172&Signature=o~Aq4xECZaXwkkNUcH3HEJVz-c5EAtH0Fdovy5iRPwH0nHLq8azN4iv4fDatvspg2snHsYmyfSWwA3-x3CKt9~EMK-KIR1aHRkI~XpjZwhrxDVjhqsB5TAUHxCPkFSuw571KlMJMbv-PTKoDPnLNqabUC6JuFrrn~OfML2GjVQPMJ-1bOOUMENz1F7YgSLL-mTFRhEfNvQ21rO5ewrQ8dWeeSU1QJ2t3h7gDQVSg9IFoMIWtDhXt9felCWlwaRE8jMgXa3GQgSK20FXEAZvlye1mBtfENBMEveJ1zOQrxHacEWb6jzoUvtqMrM5ooNJB7xBXwIoqvidSvzJa5UXD0w__&Key-Pair-Id=APKA43UPJH7H766E6EMC" type='video/mp4'>
+    <p class="vjs-no-js">
+        To view this video please enable JavaScript, and consider upgrading to a web browser that
+        <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+    </p>
+</video>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var videoId = 4; // For testing, replace this with actual video ID
+        var userId; // We will get this from Auth0
+        var accessToken; // We will get this from your endpoint
+
+        Promise.resolve({access_token: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjRQVTNielZoUElNY1N1VldXRzItTiJ9.eyJpc3MiOiJodHRwczovL2Rldi1veG1kdGtibmFiMHV4M2NvLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJvdUc3QkdkU3ZGQm9EVk0xdVl6TWxWWkVZTmlPbEJHZEBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9kZXYtb3htZHRrYm5hYjB1eDNjby51cy5hdXRoMC5jb20vYXBpL3YyLyIsImlhdCI6MTY4NjA1NTM5MSwiZXhwIjoxNjg2MTQxNzkxLCJhenAiOiJvdUc3QkdkU3ZGQm9EVk0xdVl6TWxWWkVZTmlPbEJHZCIsImd0eSI6ImNsaWVudC1jcmVkZW50aWFscyJ9.wgQH2LpOXhpFzQhRrA5qOjbwOoMq2ZVcazKcPOyvupv8p1dJDbdIM-EJ7ciUzeSJJYJCrUC3cRi9jTW1J63lbHKD_tW9HF2mVvsb7pOzgRaEqxmMOy93qjMfXMrCyC0HCzSy6_gSCOgXADsViuNHYXgpSqpxM4dbkSvKWpDYhQE7WAKhaTjXvGxeR4F5kqHituCRHodhO0XGoSjm_saJizLSYeieYKCGN_Wkc_fnKmUDI3CWUQNAt8j8_Urdj3L0UbousJ3AvB8QZA93BqwEd_xsLPpYn4D4rdHGXZSx-9hK7Xc-rZkk7V8PBwcLmDuwtGbK3rJ0Eq_U5oXt4MxDag'})
+                .then(response => response.json())
+            .then(data => {
+                accessToken = data.access_token; // Assuming your TokenResponse has an "access_token" field
+
+                // Now that we have the access token, get the user info from Auth0
+                return fetch('http://localhost:9070/users', {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+            })
+            .then(response => response.json())
+            .then(user => {
+                userId = user.user_id;
+
+                // Initialize Video.js and handle the "play" event
+                var player = videojs('my-video');
+
+                player.on('play', function() {
+                    console.log('The video is playing');
+
+                    fetch('/videos/view', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${accessToken}`
+                        },
+                        body: JSON.stringify({
+                            videoId: videoId,
+                            userId: userId,
+                            viewTime: new Date().toISOString() // Current time
+                        })
+                    });
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>
+
+
+

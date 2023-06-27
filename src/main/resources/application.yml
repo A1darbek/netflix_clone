@@ -1,0 +1,52 @@
+spring:
+  thymeleaf:
+    prefix: classpath:/mytemplates/
+  datasource:
+    url: jdbc:postgresql://localhost:5432/netflix
+    username: ayderbek
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        show_sql: false
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: Netflix_group_id
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-oxmdtkbnab0ux3co.us.auth0.com/
+      client:
+        registration:
+          auth0:
+            client-id: ouG7BGdSvFBoDVM1uYzMlVZEYNiOlBGd
+            client-secret: 6i0Hj6whJDbcrE9FkyWVyErWvceeoav1OGW79apg9NEdrBCSLIKtkc6n4CXxreYI
+            scope:
+              - openid
+              - profile
+              - email
+              - offline_access
+        provider:
+          auth0:
+            # trailing slash is important!
+            issuer-uri: https://dev-oxmdtkbnab0ux3co.us.auth0.com/
+
+logging:
+  level:
+    root: info
+    org:
+      springframework:
+        kafka: debug
+server:
+  port: 9070
+cloudfront:
+  privateKeyPath: C:/Keys/pk-APKA43UPJH7H766E6EMC-pkcs8.pem
+
+
+
